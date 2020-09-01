@@ -95,6 +95,8 @@ class WindDirection(enum.Enum):
 		if degrees < 1 or degrees > 360:
 			return None
 		return _WindDirection__FROM_DEGREE_MAP[degrees]
+
+
 _WindDirection__FROM_DEGREE_MAP = {
 	350: WindDirection.N, 351: WindDirection.N, 352: WindDirection.N, 353: WindDirection.N, 354: WindDirection.N, 355: WindDirection.N, 356: WindDirection.N, 357: WindDirection.N, 358: WindDirection.N, 359: WindDirection.N, 360: WindDirection.N, 1: WindDirection.N, 2: WindDirection.N, 3: WindDirection.N, 4: WindDirection.N, 5: WindDirection.N, 6: WindDirection.N, 7: WindDirection.N, 8: WindDirection.N, 9: WindDirection.N, 10: WindDirection.N, 11: WindDirection.N,  # noqa
 	12: WindDirection.NNE, 13: WindDirection.NNE, 14: WindDirection.NNE, 15: WindDirection.NNE, 16: WindDirection.NNE, 17: WindDirection.NNE, 18: WindDirection.NNE, 19: WindDirection.NNE, 20: WindDirection.NNE, 21: WindDirection.NNE, 22: WindDirection.NNE, 23: WindDirection.NNE, 24: WindDirection.NNE, 25: WindDirection.NNE, 26: WindDirection.NNE, 27: WindDirection.NNE, 28: WindDirection.NNE, 29: WindDirection.NNE, 30: WindDirection.NNE, 31: WindDirection.NNE, 32: WindDirection.NNE, 33: WindDirection.NNE, 34: WindDirection.NNE,  # noqa
@@ -124,6 +126,8 @@ class RainCollectorTypeSerial(RainCollectorType):
 	inches_0_01 = 0x00
 	millimeters_0_2 = 0x10
 	millimeters_0_1 = 0x20
+
+
 RainCollectorTypeSerial.inches_0_01.clicks_to_inches = lambda c: c * _HUNDREDTHS
 RainCollectorTypeSerial.inches_0_01.clicks_to_centimeters = lambda c: c / _INCHES_PER_CENTIMETER * _HUNDREDTHS
 RainCollectorTypeSerial.millimeters_0_2.clicks_to_inches = lambda c: c * _HUNDREDTHS * _INCHES_PER_CENTIMETER * 2
@@ -139,6 +143,8 @@ class RainCollectorTypeDatabase(RainCollectorType):
 	millimeters_0_2 = 0x2000
 	millimeters_1_0 = 0x3000
 	millimeters_0_1 = 0x6000
+
+
 RainCollectorTypeDatabase.inches_0_1.clicks_to_inches = lambda c: _TENTHS * c
 RainCollectorTypeDatabase.inches_0_1.clicks_to_centimeters = lambda c: c / _INCHES_PER_CENTIMETER * _TENTHS
 RainCollectorTypeDatabase.inches_0_01.clicks_to_inches = lambda c: _HUNDREDTHS * c
@@ -443,7 +449,7 @@ class ArchiveIntervalRecord(RecordDict):
 			cls.RECORD_FORMAT_WLK,
 			file_handle.read(cls.RECORD_LENGTH_WLK),
 		)
-
+		# print(arguments)
 		for k, v in six.iteritems(cls.RECORD_VERIFICATION_MAP_WLK):
 			if arguments[k] != v:
 				raise AssertionError('{} did not match expected {}'.format(arguments[k], v))
@@ -455,8 +461,12 @@ class ArchiveIntervalRecord(RecordDict):
 				if v == cls.RECORD_ATTRIBUTE_MAP_WLK[i][2]:
 					kwargs[k] = None
 				else:
-					kwargs[k] = cls.RECORD_ATTRIBUTE_MAP_WLK[i][1](v)
-
+					try:
+						kwargs[k] = cls.RECORD_ATTRIBUTE_MAP_WLK[i][1](v)
+					except Exception as ex:
+						kwargs[k] = None
+						# print("error: ", ex)
+				# print(f"i={i}, v={v} k={k} value={kwargs[k]}")
 		record = cls(**kwargs)
 
 		rain_code = arguments[10]
