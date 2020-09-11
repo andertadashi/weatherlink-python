@@ -38,21 +38,27 @@ for day, day_index in enumerate(importer.header.day_indexes):
 
 		all_values = []
 		for record in importer.daily_records[day]:
+			values = calculate_all_record_values(record)
 			output = str(record.date) + '  (' + str(record.timestamp) + ')  '
 			for item in record.RECORD_ATTRIBUTE_MAP_WLK:
 				if item[0] != '__special' and item[0][-8:] != '_version':
 					output += str(record[item[0]] or '-') + '  '
+					if item[0].startswith("wind_direction"):
+						print(record[item[0]].degrees)
+					values[item[0]] = record[item[0]] or None
 			output += str(record.rain_amount) + '  ' + str(record.rain_rate) + '  '
-			values = calculate_all_record_values(record)
 			values['datetime'] = str(record.date)
 			all_values.append(values)
-			output += '(plus %s calculated values)' % len(values)
 			print(output)
-
-
 
 		# print(importer.daily_records)
 		# print(type(importer.daily_records))
 
 		df = pd.DataFrame(all_values)
-		print(df.T)
+		print(df.wind_direction_prevailing)
+		df['wind_direction_prevailing_value'] = df.wind_direction_prevailing.apply(lambda r: r.degrees if r else None)
+		df['wind_direction_speed_high_value'] = df.wind_direction_speed_high.apply(lambda r: r.degrees if r else None)
+
+
+		print(df.head().T)
+
