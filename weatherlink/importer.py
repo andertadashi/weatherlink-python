@@ -55,5 +55,5 @@ class Importer(object):
 							self.records.append(record)
 							self.daily_records[day].append(record)
 
-			print(f"header: {self.header}")
-			print(f"daily_records: {self.daily_records}")
+			# print(f"header: {self.header}")
+			# print(f"daily_records: {self.daily_records}")

@@ -454,6 +454,9 @@ class ArchiveIntervalRecord(RecordDict):
 			if arguments[k] != v:
 				raise AssertionError('{} did not match expected {}'.format(arguments[k], v))
 
+		# ('wind_speed', TENTHS, DASH_SMALL, ),
+		# ('wind_speed_high', TENTHS, DASH_ZERO, ),
+
 		kwargs = {}
 		for i, v in enumerate(arguments):
 			if i not in cls.RECORD_VERIFICATION_MAP_WLK and i not in cls.RECORD_SPECIAL_HANDLING_WLK:
